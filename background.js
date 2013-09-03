@@ -15,7 +15,7 @@ function tabOpenerFunction (windowId) {
 function updateMenu (focusChangedEvent) {
   chrome.contextMenus.removeAll(function () {
     var mainMenu = chrome.contextMenus.create({
-      title: 'Open in specific tab',
+      title: 'Open in specific window',
       contexts: ['link']
     });
 

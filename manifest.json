@@ -1,6 +1,6 @@
 {
   "name": "Open in specific window",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "manifest_version": 2,
   "description": "Opens a link in a specified window",
   "permissions": [
@@ -12,7 +12,7 @@
     "48": "48.png",
     "128": "128.png"
   },
-  "background": { 
+  "background": {
     "scripts": ["background.js"]
   }
 }

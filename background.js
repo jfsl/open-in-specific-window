@@ -25,20 +25,29 @@ function updateMenu (focusChangedEvent) {
           height  = 0,
           width   = 0,
           id      = 0;
-      
+
       for (i = windows.length-1; i >= 0 ; i--) {
-        id      = windows[i].id;
-        height  = windows[i].height;
-        width   = windows[i].width;
+        chrome.tabs.query({
+            active: true,
+            windowId: windows[i].id
+          },
 
-        title = '' + id + ' (' + width + ' x ' + height + ') ';
+          function (result) {
+            id = result[0].windowId;
+            height = result[0].height;
+            width = result[0].width;
+            tabTitle = result[0].title;
 
-        chrome.contextMenus.create({
-          title: title,
-          contexts: ['link'],
-          onclick: tabOpenerFunction(id),
-          parentId: mainMenu
-        });
+            title = '' + tabTitle + ' | ' + id + ' (' + width + ' x ' + height + ') ';
+
+            chrome.contextMenus.create({
+              title: title,
+              contexts: ['link'],
+              onclick: tabOpenerFunction(id),
+              parentId: mainMenu
+            });
+          }
+        );
       }
     });
   });

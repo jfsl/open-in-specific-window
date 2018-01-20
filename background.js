@@ -1,4 +1,18 @@
 var openActive = false;
+var windowTitles = [];
+
+chrome.runtime.onConnect.addListener(function(port) {
+  console.assert(port.name == "open-in-specific-window");
+  
+  port.onMessage.addListener(function(msg) {
+    if (msg.action == 'rename') {
+      windowTitles[msg.id] = msg.name;
+      updateMenu();
+    } else if (msg.action == 'get-name') {
+      port.postMessage(windowTitles[msg.id]);  
+    }
+  });
+});
 
 function tabOpenerFunction (windowId) {
   return function (onClickEvent) {
@@ -38,6 +52,10 @@ function updateMenu (focusChangedEvent) {
             width = result[0].width;
             tabTitle = result[0].title;
 
+            if (windowTitles[result[0].windowId]) {
+              tabTitle = windowTitles[result[0].windowId];
+            }
+
             title = '' + tabTitle + ' | ' + id + ' (' + width + ' x ' + height + ') ';
 
             chrome.contextMenus.create({
@@ -53,7 +71,5 @@ function updateMenu (focusChangedEvent) {
   });
 }
 
-
 updateMenu();
-
 chrome.windows.onFocusChanged.addListener(updateMenu);

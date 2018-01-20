@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Open in specific window - name this window</title>
+        
+        <style>
+            button {
+                -webkit-appearance: none;
+                background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+                border: 1px solid rgba(0, 0, 0, 0.25);
+                border-radius: 2px;
+                box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+                color: #444;
+                font: inherit;
+                margin: 0 1px 0 0;
+                outline: none;
+                text-shadow: 0 1px 0 rgb(240, 240, 240);
+                user-select: none;
+            }
+
+            button:hover {
+                border: 1px solid rgba(0, 0, 0, 0.55);
+            }
+            
+            button:active {
+                border: 1px solid rgba(0, 102, 255, 0.904);
+            }
+
+            input {
+                -webkit-appearance: none;
+                border: 1px solid rgba(0, 0, 0, 0.25);
+                border-radius: 2px;
+                box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+                color: #444;
+                font: inherit;
+                margin: 0 1px 0 0;
+                outline: none;
+                text-shadow: 0 1px 0 rgb(240, 240, 240);
+                user-select: none;
+
+            }
+
+            #content {
+                white-space: nowrap;
+            }
+        </style>
+        <script src="browserAction.js"></script>
+    </head>
+    <body>
+        <span id="content">
+            <input id="name" type="text" placeholder="Rename this window" />
+            <button id="saveBtn">Save</button>
+        </span>
+    </body>
+</html>

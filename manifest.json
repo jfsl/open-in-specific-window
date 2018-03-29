@@ -1,11 +1,12 @@
 {
   "name": "Open in specific window",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "manifest_version": 2,
   "description": "Opens a link in a specified window",
   "permissions": [
     "tabs",
-    "contextMenus"
+    "contextMenus",
+    "storage"
   ],
   "icons": {
     "16": "16.png",
@@ -18,5 +19,9 @@
   "browser_action": {
     "default_title": "Name this window",
     "default_popup": "browserAction.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
   }
 }

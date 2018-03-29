@@ -1,5 +1,15 @@
-var openActive = false; // Defines wether or not 
+var options = {
+  openActive: false // Defines wether or not to focus the window, when opening a new tab in it.
+};
 var windowTitles = []; // Array of windowId -> name associations if the windows have been named by the user
+
+function readOptions() {
+  var getOptionsHandler = function (items) {
+    options = items;
+  };
+
+  chrome.storage.sync.get(options, getOptionsHandler);
+}
 
 /**
  * Creates a new chrome tab in the specified window id
@@ -11,7 +21,7 @@ function createTab(windowId, url) {
   chrome.tabs.create({
     windowId: windowId,
     url: url,
-    active: openActive
+    active: options.openActive
   });
 }
 
@@ -108,7 +118,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 function findWindowIdWithTitle(searchTitle) {
   for (idx = 0; idx < windowTitles.length; idx++) {
     if (windowTitles[idx] == searchTitle) {
-        return idx;
+      return idx;
     }
   }
 
@@ -151,8 +161,18 @@ chrome.runtime.onMessageExternal.addListener(
   }
 );
 
+function windowRemovedHandler(windowId) {
+  console.log(windowTitles);
+  windowTitles.splice(windowId, 1);
+  console.log(windowTitles);
+}
+
+// First read in options
+readOptions();
+
 // Manually update the menu on first load 
 updateMenu();
 
 // Listen for changes in window focus and update the menu every time it happens.
+chrome.windows.onRemoved.addListener(windowRemovedHandler);
 chrome.windows.onFocusChanged.addListener(updateMenu);

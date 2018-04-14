@@ -1,10 +1,10 @@
-var options = {
+let options = {
   openActive: false // Defines wether or not to focus the window, when opening a new tab in it.
 };
-var windowTitles = []; // Array of windowId -> name associations if the windows have been named by the user
+let windowTitles = []; // Array of windowId -> name associations if the windows have been named by the user
 
 function readOptions() {
-  var getOptionsHandler = function (items) {
+  let getOptionsHandler = function (items) {
     options = items;
   };
 
@@ -36,8 +36,8 @@ function tabOpenerFunction(windowId) {
    * 
    * @param {chrome.contextMenus.OnClickData} onClickEvent 
    */
-  var openerHandler = function (onClickEvent) {
-    var url = onClickEvent.linkUrl;
+  let openerHandler = function (onClickEvent) {
+    let url = onClickEvent.linkUrl;
     createTab(windowId, url);
   };
 
@@ -50,13 +50,13 @@ function tabOpenerFunction(windowId) {
  */
 function updateMenu(focusChangedEvent) {
   chrome.contextMenus.removeAll(function () {
-    var mainMenu = chrome.contextMenus.create({
+    let mainMenu = chrome.contextMenus.create({
       title: 'Open in specific window',
       contexts: ['link']
     });
 
     chrome.windows.getAll(function (windows) {
-      var i = 0,
+      let i = 0,
         title = '',
         height = 0,
         width = 0,
@@ -72,7 +72,7 @@ function updateMenu(focusChangedEvent) {
             id = result[0].windowId;
             height = result[0].height;
             width = result[0].width;
-            var tabTitle = result[0].title;
+            let tabTitle = result[0].title;
 
             if (windowTitles[result[0].windowId]) {
               tabTitle = windowTitles[result[0].windowId];
@@ -131,7 +131,7 @@ chrome.runtime.onMessageExternal.addListener(
     // All responses echo back the request.id attribute
     // This is to make integration easier when doing multiple requests
     // on the client side.
-    var response = {
+    let response = {
       'requestId': request.id
     };
 
@@ -143,7 +143,7 @@ chrome.runtime.onMessageExternal.addListener(
     } else if (request.action == 'getWindowIdWithTitle') {
       // getWindowIdWithTitle will return the windowId associated with the given
       // title, if no match is found response will have the success attribute set to false
-      var windowId = findWindowIdWithTitle(request.title);
+      let windowId = findWindowIdWithTitle(request.title);
 
       if (windowId) {
         response.windowId = idx;
@@ -155,16 +155,27 @@ chrome.runtime.onMessageExternal.addListener(
         sendResponse(response);
       }
     } else if (request.action == 'openTabInWindow') {
-      // openTavInWindow action will open the requested url in the requested window id
-      createTab(request.windowId, request.url);
+      // openTavInWindow action will open the requested url in the requested window id or window name
+      if (request.windowId != null) {
+        createTab(request.windowId, request.url);
+      } else if (request.windowName != null) {
+        let windowId = findWindowIdWithTitle(request.windowName);
+
+        if (windowId) {
+          createTab(windowId, request.url);
+        } else {
+          chrome.windows.create({url: request.url}, function (window) {
+            windowTitles[window.id] = request.windowName;
+          });
+        }
+      }
     }
   }
 );
 
 function windowRemovedHandler(windowId) {
-  console.log(windowTitles);
+  // Make sure to remove the id -> name association when the window is closed to avoid dead names/ids
   windowTitles.splice(windowId, 1);
-  console.log(windowTitles);
 }
 
 // First read in options

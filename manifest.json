@@ -1,6 +1,6 @@
 {
   "name": "Open in specific window",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "manifest_version": 2,
   "description": "Opens a link in a specified window",
   "permissions": [

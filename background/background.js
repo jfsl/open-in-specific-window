@@ -1,15 +1,17 @@
+import {readOptions} from "../modules/options.js";
+
+console.log('loaded');
+
 let options = {
   openActive: false // Defines wether or not to focus the window, when opening a new tab in it.
 };
 let windowTitles = []; // Array of windowId -> name associations if the windows have been named by the user
 
-function readOptions() {
-  let getOptionsHandler = function (items) {
-    options = items;
-  };
-
-  chrome.storage.sync.get(options, getOptionsHandler);
-}
+// readOption and override global var with defaults
+readOptions(function (items) {
+  options = items;
+  console.log(options);
+});
 
 /**
  * Creates a new chrome tab in the specified window id
@@ -177,9 +179,6 @@ function windowRemovedHandler(windowId) {
   // Make sure to remove the id -> name association when the window is closed to avoid dead names/ids
   windowTitles.splice(windowId, 1);
 }
-
-// First read in options
-readOptions();
 
 // Manually update the menu on first load 
 updateMenu();

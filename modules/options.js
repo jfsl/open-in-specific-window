@@ -1,5 +1,6 @@
 var defaultOptions = {
-    openActive: false
+    openActive: false,
+    shortcutOpenName: null
 };
 
 /**

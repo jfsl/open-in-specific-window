@@ -1,6 +1,7 @@
-import {readOptions} from "../modules/options.js";
+import { readOptions } from "../modules/options.js";
 
 console.log('loaded');
+chrome.runtime.setUninstallURL("http://jfsl.dk/oisw-uninstall.php");
 
 let options = {
   openActive: false // Defines wether or not to focus the window, when opening a new tab in it.
@@ -99,7 +100,7 @@ function updateMenu(focusChangedEvent) {
 chrome.runtime.onConnect.addListener(function (port) {
   console.assert(port.name == "open-in-specific-window");
 
-  port.onMessage.addListener(function (msg) {
+  port.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.action == 'rename') {
       // Rename action will associate a name with a given window id
       windowTitles[msg.id] = msg.name;
@@ -107,6 +108,27 @@ chrome.runtime.onConnect.addListener(function (port) {
     } else if (msg.action == 'get-name') {
       // Get name action will return the name associated with a given window id
       port.postMessage(windowTitles[msg.id]);
+    } else if (msg.action == 'shortcut-open-enabled') {
+      // Check if shortcut open has been configured
+
+      console.log('shortcut-open-enabled', msg);
+
+      if (options.shortcutOpenName) {
+        port.postMessage({action: 'shortcut-open-enabled', response: true});
+      } else {
+        port.postMessage({action: 'shortcut-open-enabled', response: false});
+      }
+    } else if (msg.action == 'shortcut-open') {
+      let shortcutName = options.shortcutOpenName;
+      let windowId = findWindowIdWithTitle(shortcutName);
+
+      if (windowId) {
+        createTab(windowId, msg.url);
+      } else {
+        chrome.windows.create({ url: msg.url }, function (window) {
+          windowTitles[window.id] = shortcutName;
+        });
+      }
     }
   });
 });
@@ -118,9 +140,11 @@ chrome.runtime.onConnect.addListener(function (port) {
  * @returns {int|False} 
  */
 function findWindowIdWithTitle(searchTitle) {
-  for (idx = 0; idx < windowTitles.length; idx++) {
-    if (windowTitles[idx] == searchTitle) {
-      return idx;
+  if (windowTitles.length > 0) {
+    for (let idx = 0; idx < windowTitles.length; idx++) {
+      if (windowTitles[idx] == searchTitle) {
+        return idx;
+      }
     }
   }
 
@@ -166,7 +190,7 @@ chrome.runtime.onMessageExternal.addListener(
         if (windowId) {
           createTab(windowId, request.url);
         } else {
-          chrome.windows.create({url: request.url}, function (window) {
+          chrome.windows.create({ url: request.url }, function (window) {
             windowTitles[window.id] = request.windowName;
           });
         }

@@ -1,18 +1,7 @@
 var port = chrome.runtime.connect({ name: "open-in-specific-window" });
-
 port.postMessage({action: 'shortcut-open-enabled'});
 
-port.onMessage.addListener(function (msg) {
-    switch (msg.action) {
-        case 'shortcut-open-enabled':
-            console.log(msg);
-        break;
-    }
-});
-
-
 function linkClickedHandler(evt) {
-    console.log();
     if (evt.altKey) {
         evt.preventDefault();
         port.postMessage({
@@ -22,8 +11,16 @@ function linkClickedHandler(evt) {
     }
 }
 
-let links = document.getElementsByTagName('a');
-for (let i = 0; i < links.length; i++) {
-    link = links[i];
-    link.addEventListener('click', linkClickedHandler);
-}
+port.onMessage.addListener(function (msg) {
+    switch (msg.action) {
+        case 'shortcut-open-enabled':
+            if (msg.response) {
+                let links = document.getElementsByTagName('a');
+                for (let i = 0; i < links.length; i++) {
+                    link = links[i];
+                    link.addEventListener('click', linkClickedHandler);
+                }
+            }
+        break;
+    }
+});

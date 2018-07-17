@@ -1,55 +1,83 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Open in specific window - name this window</title>
-        
-        <style>
-            button {
-                -webkit-appearance: none;
-                background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
-                border: 1px solid rgba(0, 0, 0, 0.25);
-                border-radius: 2px;
-                box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
-                color: #444;
-                font: inherit;
-                margin: 0 1px 0 0;
-                outline: none;
-                text-shadow: 0 1px 0 rgb(240, 240, 240);
-                user-select: none;
-            }
 
-            button:hover {
-                border: 1px solid rgba(0, 0, 0, 0.55);
-            }
-            
-            button:active {
-                border: 1px solid rgba(0, 102, 255, 0.904);
-            }
+<head>
+    <title>Open in specific window - name this window</title>
 
-            input {
-                -webkit-appearance: none;
-                border: 1px solid rgba(0, 0, 0, 0.25);
-                border-radius: 2px;
-                box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
-                color: #444;
-                font: inherit;
-                margin: 0 1px 0 0;
-                outline: none;
-                text-shadow: 0 1px 0 rgb(240, 240, 240);
-                user-select: none;
+    <style>
+        button {
+            -webkit-appearance: none;
+            background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            border-radius: 2px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+            color: #444;
+            font: inherit;
+            margin: 0 1px 0 0;
+            outline: none;
+            text-shadow: 0 1px 0 rgb(240, 240, 240);
+            user-select: none;
+        }
 
-            }
+        button:hover {
+            border: 1px solid rgba(0, 0, 0, 0.55);
+        }
 
-            #content {
-                white-space: nowrap;
-            }
-        </style>
-        <script type="module" src="browserAction.js"></script>
-    </head>
-    <body>
-        <span id="content">
-            <input id="name" type="text" placeholder="Rename this window" />
-            <button id="saveBtn">Save</button>
-        </span>
-    </body>
+        button:active {
+            border: 1px solid rgba(0, 102, 255, 0.904);
+        }
+
+        input {
+            -webkit-appearance: none;
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            border-radius: 2px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+            color: #444;
+            font: inherit;
+            margin: 0 1px 0 0;
+            outline: none;
+            text-shadow: 0 1px 0 rgb(240, 240, 240);
+            user-select: none;
+
+        }
+
+        #content {
+            white-space: nowrap;
+        }
+
+        .icon {
+            pointer-events: none;
+            width: 10%;
+            height: 10%;
+            float: right;
+            margin: 0px 5px 5px 5px;
+        }
+
+        .icon-label {
+            float: right;
+            margin: 0px 5px 5px 5px;
+        }
+    </style>
+    <script type="module" src="browserAction.js"></script>
+</head>
+
+<body>
+    <span id="content">
+        <input id="name" type="text" placeholder="Rename this window" />
+        <button id="saveBtn">Save</button>
+        <br/>
+        <hr/>
+        <a href="#options" id="options-link">
+            <span style="display: inline; margin: 0px 5px 5px 5px;">
+                <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="icon">
+                    <g>
+                        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"></path>
+                    </g>
+                </svg>
+                <div class="icon-label">Settings</div>
+            </span>
+        </a>
+    </span>
+</body>
+
 </html>

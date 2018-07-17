@@ -32,6 +32,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  document.getElementById('options-link').addEventListener('click', function (evt) {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      window.open(chrome.runtime.getURL('options.html'));
+    }
+  });
+
   nameInput.focus();
 });
 

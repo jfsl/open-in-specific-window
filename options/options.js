@@ -47,6 +47,12 @@ document.addEventListener('DOMContentLoaded', function () {
             openShortcutNameDomElement().value = items.shortcutOpenName;
         }
     });
+
+    openShortcutEnabledDomElement().addEventListener('change', function(evt) {
+        if (!evt.target.checked) {
+            openShortcutNameDomElement().value = "";   
+        }
+    })
 });
 
 document.getElementById('save').addEventListener('click', function () {

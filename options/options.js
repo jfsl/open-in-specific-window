@@ -1,4 +1,5 @@
 //@ts-check 
+var port = chrome.runtime.connect({ name: "open-in-specific-window" });
 
 import { saveOptions, readOptions } from '../modules/options.js';
 
@@ -56,7 +57,6 @@ document.getElementById('save').addEventListener('click', function () {
     if (openShortcutEnabledDomElement().checked && !openShortcutNameDomElement().value) {
         status.innerHTML = '<div style="color: red">Name must be set when Alt-click is enabled</div>';
     } else {
-        console.log(openShortcutNameDomElement().value);
         saveOptions(
             {
                 openActive: openActiveDomElement().checked,
@@ -64,11 +64,12 @@ document.getElementById('save').addEventListener('click', function () {
             },
             function () {
                 status.textContent = 'Options saved.';
-
+                
                 setTimeout(function () {
                     status.textContent = '';
                 }, 750);
             }
         );
+        port.postMessage({action: 'options-saved'});
     }
 });

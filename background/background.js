@@ -8,11 +8,16 @@ let options = {
 };
 let windowTitles = []; // Array of windowId -> name associations if the windows have been named by the user
 
-// readOption and override global var with defaults
-readOptions(function (items) {
-  options = items;
-  console.log(options);
-});
+function updateOptions () {
+  // readOption and override global var with defaults
+  readOptions(function (items) {
+    options = items;
+    console.log(options);
+  });
+}
+
+// read options immediately, for later use.
+updateOptions();
 
 /**
  * Creates a new chrome tab in the specified window id
@@ -110,9 +115,6 @@ chrome.runtime.onConnect.addListener(function (port) {
       port.postMessage(windowTitles[msg.id]);
     } else if (msg.action == 'shortcut-open-enabled') {
       // Check if shortcut open has been configured
-
-      console.log('shortcut-open-enabled', msg);
-
       if (options.shortcutOpenName) {
         port.postMessage({action: 'shortcut-open-enabled', response: true});
       } else {
@@ -129,6 +131,8 @@ chrome.runtime.onConnect.addListener(function (port) {
           windowTitles[window.id] = shortcutName;
         });
       }
+    } else if (msg.action == 'options-saved') {
+      updateOptions();
     }
   });
 });

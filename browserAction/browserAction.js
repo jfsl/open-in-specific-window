@@ -1,6 +1,11 @@
 //@ts-check 
 var port = chrome.runtime.connect({ name: "open-in-specific-window" });
 
+/**
+ * Save handler for the window rename function
+ * 
+ * @param {Event} evt 
+ */
 function save(evt) {
   var rootWindow = window; 
   chrome.windows.getCurrent({}, function (window) {

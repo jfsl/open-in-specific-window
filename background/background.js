@@ -1,3 +1,4 @@
+//@ts-check 
 import { readOptions } from "../modules/options.js";
 
 console.log('loaded');
@@ -8,7 +9,7 @@ let options = {
 };
 let windowTitles = []; // Array of windowId -> name associations if the windows have been named by the user
 
-function updateOptions () {
+function updateOptions() {
   // readOption and override global var with defaults
   readOptions(function (items) {
     options = items;
@@ -54,9 +55,10 @@ function tabOpenerFunction(windowId) {
 
 /**
  * Updates the context menu in the chrome right-click GUI
- * @param {chrome.windows.WindowIdEvent} focusChangedEvent 
+ * @param {number} windowId
+ * @param {chrome.windows.WindowEventFilter} focusChangedEvent 
  */
-function updateMenu(focusChangedEvent) {
+function updateMenu(windowId, focusChangedEvent) {
   chrome.contextMenus.removeAll(function () {
     let mainMenu = chrome.contextMenus.create({
       title: 'Open in specific window',
@@ -88,12 +90,13 @@ function updateMenu(focusChangedEvent) {
 
             title = '' + tabTitle + ' | ' + id + ' (' + width + ' x ' + height + ') ';
 
-            chrome.contextMenus.create({
+            let createProperties = /** @type {chrome.contextMenus.CreateProperties} */ ({
               title: title,
               contexts: ['link'],
               onclick: tabOpenerFunction(id),
               parentId: mainMenu
             });
+            chrome.contextMenus.create(createProperties);
           }
         );
       }
@@ -109,16 +112,16 @@ chrome.runtime.onConnect.addListener(function (port) {
     if (msg.action == 'rename') {
       // Rename action will associate a name with a given window id
       windowTitles[msg.id] = msg.name;
-      updateMenu();
+      updateMenu(null, null);
     } else if (msg.action == 'get-name') {
       // Get name action will return the name associated with a given window id
       port.postMessage(windowTitles[msg.id]);
     } else if (msg.action == 'shortcut-open-enabled') {
       // Check if shortcut open has been configured
       if (options.shortcutOpenName) {
-        port.postMessage({action: 'shortcut-open-enabled', response: true});
+        port.postMessage({ action: 'shortcut-open-enabled', response: true });
       } else {
-        port.postMessage({action: 'shortcut-open-enabled', response: false});
+        port.postMessage({ action: 'shortcut-open-enabled', response: false });
       }
     } else if (msg.action == 'shortcut-open') {
       let shortcutName = options.shortcutOpenName;
@@ -140,8 +143,8 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 /**
  * Finds the window id with the given title, returns false if not found 
- * @param {String} title
- * @returns {int|False} 
+ * @param {String} searchTitle
+ * @returns {number|false} 
  */
 function findWindowIdWithTitle(searchTitle) {
   if (windowTitles.length > 0) {
@@ -176,7 +179,7 @@ chrome.runtime.onMessageExternal.addListener(
       let windowId = findWindowIdWithTitle(request.title);
 
       if (windowId) {
-        response.windowId = idx;
+        response.windowId = windowId;
         response.success = true;
         sendResponse(response);
       } else {
@@ -209,7 +212,7 @@ function windowRemovedHandler(windowId) {
 }
 
 // Manually update the menu on first load 
-updateMenu();
+updateMenu(null, null);
 
 // Listen for changes in window focus and update the menu every time it happens.
 chrome.windows.onRemoved.addListener(windowRemovedHandler);

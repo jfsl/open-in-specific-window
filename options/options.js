@@ -9,8 +9,7 @@ import { saveOptions, readOptions } from '../modules/options.js';
  * @return {HTMLInputElement} 
  */
 function openActiveDomElement() {
-    /** @type{HTMLInputElement} */
-    let element = document.getElementById('open-active');
+    let element = /** @type{HTMLInputElement} */ (document.getElementById('open-active'));
 
     return element
 }
@@ -21,8 +20,7 @@ function openActiveDomElement() {
  * @return {HTMLInputElement} 
  */
 function openShortcutEnabledDomElement() {
-    /** @type{HTMLInputElement} */
-    let element = document.getElementById('shortcut-open-enabled');
+    let element = /** @type {HTMLInputElement} */ (document.getElementById('shortcut-open-enabled'));
 
     return element
 }
@@ -33,8 +31,7 @@ function openShortcutEnabledDomElement() {
  * @return {HTMLInputElement} 
  */
 function openShortcutNameDomElement() {
-    /** @type{HTMLInputElement} */
-    let element = document.getElementById('shortcut-open-name');
+    let element = /** @type{HTMLInputElement} */ (document.getElementById('shortcut-open-name'));
 
     return element
 }
@@ -49,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     openShortcutEnabledDomElement().addEventListener('change', function(evt) {
-        if (!evt.target.checked) {
+        if (!openShortcutEnabledDomElement().checked) {
             openShortcutNameDomElement().value = "";   
         }
     })

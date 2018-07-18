@@ -1,3 +1,4 @@
+//@ts-check 
 var port = chrome.runtime.connect({ name: "open-in-specific-window" });
 
 function save(evt) {
@@ -6,7 +7,7 @@ function save(evt) {
     port.postMessage({
       action: 'rename',
       id: window.id,
-      name: document.getElementById('name').value
+      name: /** @type {HTMLInputElement} */ (document.getElementById('name')).value
     });
 
     rootWindow.close();
@@ -43,8 +44,13 @@ document.addEventListener("DOMContentLoaded", function () {
   nameInput.focus();
 });
 
-// Add enter name into the nameInput, when background page answers
-port.onMessage.addListener(function (msg) {
-  var nameInput = document.getElementById('name');
+/**
+ * Add enter name into the nameInput, when background page answers 
+ * 
+ * @param {String} msg 
+ */
+function portMessageListener (msg) {
+  let nameInput = /** @type {HTMLInputElement} */ (document.getElementById('name'));
   nameInput.value = msg;
-});
+}
+port.onMessage.addListener(portMessageListener);

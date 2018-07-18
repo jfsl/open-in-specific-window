@@ -7,7 +7,7 @@ var port = chrome.runtime.connect({ name: "open-in-specific-window" });
  * @param {Event} evt 
  */
 function save(evt) {
-  var rootWindow = window; 
+  var rootWindow = window;
   chrome.windows.getCurrent({}, function (window) {
     port.postMessage({
       action: 'rename',
@@ -21,7 +21,7 @@ function save(evt) {
 
 document.addEventListener("DOMContentLoaded", function () {
   var saveBtn = document.getElementById('saveBtn'),
-      nameInput = document.getElementById('name');
+    nameInput = document.getElementById('name');
 
   saveBtn.addEventListener('click', save);
   nameInput.addEventListener('keypress', function (evt) {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
  * 
  * @param {String} msg 
  */
-function portMessageListener (msg) {
+function portMessageListener(msg) {
   let nameInput = /** @type {HTMLInputElement} */ (document.getElementById('name'));
   nameInput.value = msg;
 }

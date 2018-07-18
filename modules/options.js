@@ -1,3 +1,4 @@
+//@ts-check
 var defaultOptions = {
     openActive: false,
     shortcutOpenName: null
@@ -16,5 +17,5 @@ export function saveOptions(options, callback) {
  * @param {Function} callback
  */
 export function readOptions(callback) {
-    chrome.storage.sync.get(defaultOptions, callback);
+    chrome.storage.sync.get(defaultOptions, /** @type {(items: { [key: string]: any; }) => void} */ (callback));
 }

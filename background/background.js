@@ -4,6 +4,8 @@ import { readOptions } from "../modules/options.js";
 console.log('loaded');
 chrome.runtime.setUninstallURL("http://jfsl.dk/oisw-uninstall.php");
 
+let firstWindow = undefined;
+
 let options = {
   openActive: false // Defines wether or not to focus the window, when opening a new tab in it.
 };
@@ -65,12 +67,17 @@ function updateMenu(windowId, focusChangedEvent) {
       contexts: ['link']
     });
 
+    firstWindow = undefined;
+
     chrome.windows.getAll(function (windows) {
       let i = 0,
         title = '',
         height = 0,
         width = 0,
         id = 0;
+
+      if (firstWindow == undefined)
+        firstWindow = windows[0].id
 
       for (i = windows.length - 1; i >= 0; i--) {
         chrome.tabs.query(
@@ -116,26 +123,33 @@ chrome.runtime.onConnect.addListener(function (port) {
     } else if (msg.action == 'get-name') {
       // Get name action will return the name associated with a given window id
       port.postMessage(windowTitles[msg.id]);
-    } else if (msg.action == 'shortcut-open-enabled') {
+    } else if (msg.action == 'shortcut-open-alt-enabled') {
       // Check if shortcut open has been configured
-      if (options.shortcutOpenName) {
-        port.postMessage({ action: 'shortcut-open-enabled', response: true });
-      } else {
-        port.postMessage({ action: 'shortcut-open-enabled', response: false });
-      }
+      port.postMessage({ action: 'shortcut-open-alt-enabled', response: options.shortcutOpenAlt });
     } else if (msg.action == 'shortcut-open') {
-      let shortcutName = options.shortcutOpenName;
-      let windowId = findWindowIdWithTitle(shortcutName);
+      console.log("shortcut-open received");
+      var windowId = undefined;
+
+      if (options.shortcutOpen || (options.shortcutOpenAlt && msg.altPressed)) {
+        if (options.shortcutOpenName) {
+          windowId = findWindowIdWithTitle(options.shortcutOpenName);
+        } else {
+          windowId = firstWindow;
+        }
+      } else {
+        windowId = sender.window.id;
+      }
 
       if (windowId) {
         createTab(windowId, msg.url);
       } else {
         chrome.windows.create({ url: msg.url }, function (window) {
-          windowTitles[window.id] = shortcutName;
+          windowTitles[window.id] = options.shortcutName;
         });
       }
     } else if (msg.action == 'options-saved') {
       updateOptions();
+      port.postMessage({ action: 'shortcut-open-alt-enabled', response: options.shortcutOpenAlt });
     }
   });
 });

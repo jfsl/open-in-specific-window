@@ -1,6 +1,8 @@
 //@ts-check 
 var port = chrome.runtime.connect({ name: "open-in-specific-window" });
-port.postMessage({ action: 'shortcut-open-enabled' });
+port.postMessage({ action: 'shortcut-open-alt-enabled' });
+
+shortcutOpenAltEnabled = false;
 
 /**
  * 
@@ -8,11 +10,17 @@ port.postMessage({ action: 'shortcut-open-enabled' });
  */
 function linkClickedHandler(evt) {
     let link = /** @type {HTMLLinkElement} */ (evt.target);
-    if (evt.altKey) {
+
+    if (link.tagName.toLowerCase() != "a")
+        return;
+
+    if ((shortcutOpenAltEnabled && evt.altKey) || link.target == "_blank") {
         evt.preventDefault();
+        var port = chrome.runtime.connect({ name: "open-in-specific-window" });
         port.postMessage({
             action: 'shortcut-open',
-            url: link.href
+            url: link.href,
+            alt: evt.altKey
         });
     }
 }
@@ -29,16 +37,12 @@ function linkClickedHandler(evt) {
  */
 function portMessageHandler (msg) {
     switch (msg.action) {
-        case 'shortcut-open-enabled':
-            if (msg.response) {
-                let links = document.getElementsByTagName('a');
-                for (let i = 0; i < links.length; i++) {
-                    let link = links[i];
-                    link.addEventListener('click', linkClickedHandler);
-                }
-            }
+        case 'shortcut-open-alt-enabled':
+            shortcutOpenAltEnabled = msg.response;
             break;
     }
 }
 
 port.onMessage.addListener(portMessageHandler);
+
+document.getElementsByTagName('body')[0].addEventListener('click', linkClickedHandler, true);

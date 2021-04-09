@@ -20,7 +20,18 @@ function openActiveDomElement() {
  * @return {HTMLInputElement} 
  */
 function openShortcutEnabledDomElement() {
-    let element = /** @type {HTMLInputElement} */ (document.getElementById('shortcut-open-enabled'));
+    let element = /** @type {HTMLInputElement} */ (document.getElementById('shortcut-open'));
+
+    return element
+}
+
+/**
+ * Gets the openShortcutAltEnabled checkbox DOM Element
+ * 
+ * @return {HTMLInputElement} 
+ */
+function openShortcutAltEnabledDomElement() {
+    let element = /** @type {HTMLInputElement} */ (document.getElementById('shortcut-open-alt'));
 
     return element
 }
@@ -39,17 +50,10 @@ function openShortcutNameDomElement() {
 document.addEventListener('DOMContentLoaded', function () {
     readOptions(function (items) {
         openActiveDomElement().checked = items.openActive;
-        if (items.shortcutOpenName) {
-            openShortcutEnabledDomElement().checked = true;
-            openShortcutNameDomElement().value = items.shortcutOpenName;
-        }
+        openShortcutEnabledDomElement().checked = items.shortcutOpen;
+        openShortcutAltEnabledDomElement().checked = items.shortcutOpenAlt;
+        openShortcutNameDomElement().value = items.shortcutOpenName;
     });
-
-    openShortcutEnabledDomElement().addEventListener('change', function(evt) {
-        if (!openShortcutEnabledDomElement().checked) {
-            openShortcutNameDomElement().value = "";   
-        }
-    })
 });
 
 document.getElementById('save').addEventListener('click', function () {
@@ -57,22 +61,20 @@ document.getElementById('save').addEventListener('click', function () {
 
     status.textContent = "Save clicked";
 
-    if (openShortcutEnabledDomElement().checked && !openShortcutNameDomElement().value) {
-        status.innerHTML = '<div style="color: red">Name must be set when Alt-click is enabled</div>';
-    } else {
-        saveOptions(
-            {
-                openActive: openActiveDomElement().checked,
-                shortcutOpenName: openShortcutNameDomElement().value
-            },
-            function () {
-                status.textContent = 'Options saved.';
-                
-                setTimeout(function () {
-                    status.textContent = '';
-                }, 750);
-            }
-        );
-        port.postMessage({action: 'options-saved'});
-    }
+    saveOptions(
+        {
+            openActive: openActiveDomElement().checked,
+            shortcutOpenAlt: openShortcutAltEnabledDomElement().value,
+            shortcutOpen: openShortcutEnabledDomElement().value,
+            shortcutOpenName: openShortcutNameDomElement().value
+        },
+        function () {
+            status.textContent = 'Options saved.';
+
+            setTimeout(function () {
+                status.textContent = '';
+            }, 750);
+        }
+    );
+    port.postMessage({action: 'options-saved'});
 });

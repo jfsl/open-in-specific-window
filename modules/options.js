@@ -1,7 +1,9 @@
 //@ts-check
 var defaultOptions = {
     openActive: false,
-    shortcutOpenName: null
+    shortcutOpenName: null,
+    shortcutOpen: false,
+    shortcutOpenAlt: false,
 };
 
 /**
